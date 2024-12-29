@@ -48,17 +48,19 @@ pipeline {
 
         stage('SonarQube Analysis') {
             environment {
-                SONAR_TOKEN = credentials('sonar-token') // Accessing the SonarQube token stored in Jenkins credentials
+                SONAR_TOKEN = credentials('sonarqube-token') // Accessing the SonarQube token stored in Jenkins credentials
             }
             steps {
                 bat '''
                 set PATH=%PYTHON_PATH%;%PATH%
-                sonar-scanner -Dsonar.projectKey=codecovrage ^
-                                            -Dsonar.sources=. ^
-                                            -Dsonar.python.coverage.reportPaths=coverage.xml ^
-                                            -Dsonar.host.url=http://localhost:9000 ^
-                                            -Dsonar.token=sqp_72ba8a32d8594b138f3a92569a947cca664e9805               
+                sonar-scanner -Dsonar.projectKey=coverage ^
+                            -Dsonar.sources=. ^
+                            -Dsonar.python.coverage.reportPaths=coverage.xml ^
+                            -Dsonar.host.url=http://localhost:9000 ^
+                            -Dsonar.token=sqp_5dabc8344eb182d2945b0831fbcae5639b261738
+                             
                 '''
+
             }
         }
     }
