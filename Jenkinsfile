@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        PYTHON_PATH = 'C:\Program Files\Python311;C:\Program Files\Python311\Scripts'
+        PYTHON_PATH = 'C:\\Program Files\\Python311;C:\\Program Files\\Python311\\Scripts'
     }
     stages {
         stage('Checkout') {
@@ -14,6 +14,7 @@ pipeline {
             steps {
                 bat '''
                 set PATH=%PYTHON_PATH%;%PATH%
+                pip install coverage || exit /b 1
                 pip show coverage
                 '''
             }
@@ -48,19 +49,13 @@ pipeline {
 
         stage('SonarQube Analysis') {
             environment {
-                SONAR_TOKEN = credentials('sonarqube_jenkin') // Accessing the SonarQube token stored in Jenkins credentials
+                SONAR_TOKEN = credentials('new_coverage') // Accessing SonarQube token stored in Jenkins
             }
             steps {
                 bat '''
-                set PATH=%PYTHON_PATH%;%PATH%
-                sonar-scanner -Dsonar.projectKey=coverage ^
-                            -Dsonar.sources=. ^
-                            -Dsonar.python.coverage.reportPaths=coverage.xml ^
-                            -Dsonar.host.url=http://localhost:9000 ^
-                            -Dsonar.token=sqp_5dabc8344eb182d2945b0831fbcae5639b261738
-                             
+                set PATH=C:\\Users\\Admin\\Downloads\\scanner\\sonar-scanner-6.2.1.4610-windows-x64\\bin;%PATH%
+                sonar-scanner.bat -D"sonar.projectKey=new_coverage" -D"sonar.sources=." -D"sonar.host.url=http://localhost:9000" -D"sonar.token=%SONAR_TOKEN%"
                 '''
-
             }
         }
     }
