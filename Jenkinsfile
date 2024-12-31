@@ -24,13 +24,13 @@ pipeline {
             steps {
                 bat '''
                 set PATH=%PYTHON_PATH%;%PATH%
-                echo "Running tests with coverage..."
+                echo Running tests with coverage...
                 coverage run --source=. test_myapp.py || exit /b 1
                 coverage xml -o coverage.xml || exit /b 1
                 if exist coverage.xml (
-                    echo "Coverage report generated successfully."
+                    echo Coverage report generated successfully.
                 ) else (
-                    echo "Error: Coverage report not found!"
+                    echo Error: Coverage report not found!
                     exit /b 1
                 )
                 '''
@@ -41,21 +41,20 @@ pipeline {
             steps {
                 bat '''
                 set PATH=%PYTHON_PATH%;%PATH%
-                echo "Current working directory: %cd%"
+                echo Current working directory: %cd%
                 dir
                 '''
             }
         }
 
         stage('SonarQube Analysis') {
-            environment {
-                SONAR_TOKEN = credentials('new_coverage') // Accessing SonarQube token stored in Jenkins
-            }
             steps {
-                bat '''
-                set PATH=C:\\Users\\Admin\\Downloads\\scanner\\sonar-scanner-6.2.1.4610-windows-x64\\bin;%PATH%
-                sonar-scanner.bat -D"sonar.projectKey=new_coverage" -D"sonar.sources=." -D"sonar.host.url=http://localhost:9000" -D"sonar.token=%SONAR_TOKEN%"
-                '''
+                withCredentials([string(credentialsId: 'new_coverage', variable: 'SONAR_TOKEN')]) {
+                    bat '''
+                    set PATH=C:\\Users\\Admin\\Downloads\\scanner\\sonar-scanner-6.2.1.4610-windows-x64\\bin;%PATH%
+                    sonar-scanner.bat -D"sonar.projectKey=new_coverage" -D"sonar.sources=." -D"sonar.host.url=http://localhost:9000" -D"sonar.token=%SONAR_TOKEN%"
+                    '''
+                }
             }
         }
     }
